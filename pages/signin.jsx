@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
@@ -12,11 +12,17 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 const theme = createTheme();
-const data = { firstName: "", lastName: "", email: "", password: "" };
-const existingUsers = [];
+const data = { email: "", password: "" };
+// const existingUsers = [];
 
 export default function SignUp() {
   const [formData, setFormData] = useState(data);
+  const [userData, setUserData] = useState();
+
+  useEffect(() => {
+    const data = JSON.parse(localStorage.getItem("users"));
+    setUserData(data);
+  }, []);
 
   const router = useRouter();
 
@@ -27,11 +33,20 @@ export default function SignUp() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    existingUsers.push(formData);
-    console.log(existingUsers);
-    setFormData(data);
-    localStorage.setItem("users", JSON.stringify(existingUsers));
-    router.push("/home");
+    // existingUsers.push(formData);
+    // console.log(existingUsers);
+
+    if (
+      userData.email === formData.email &&
+      userData.password === formData.password
+    ) {
+      router.push("/home");
+      setFormData(data);
+    } else {
+      alert("please provide valid email and password");
+    }
+    console.log(userData);
+    console.log(formData);
   };
 
   return (
@@ -50,7 +65,7 @@ export default function SignUp() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign up
+            Signin
           </Typography>
           <Box
             component="form"
@@ -59,29 +74,6 @@ export default function SignUp() {
             sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  name="firstName"
-                  required
-                  fullWidth
-                  id="firstName"
-                  label="First Name"
-                  autoFocus
-                  value={formData.firstName}
-                  onChange={changeHandler}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={changeHandler}
-                />
-              </Grid>
               <Grid item xs={12}>
                 <TextField
                   required
@@ -112,7 +104,7 @@ export default function SignUp() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign Up
+              Signin
             </Button>
           </Box>
         </Box>
